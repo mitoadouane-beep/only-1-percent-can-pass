@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="description" content="ONLY 1% CAN PASS — a fast brain challenge with logic, memory, observation and reaction tests.">
+  <meta name="theme-color" content="#090b13">
+  <title>ONLY 1% CAN PASS — Brain Challenge</title>
+  <style>
+    :root{
+      --bg:#080a12;--panel:#101321;--panel2:#151a2b;--text:#f4f7ff;--muted:#9ca7c4;
+      --accent:#7c5cff;--accent2:#00d4ff;--good:#2ee59d;--bad:#ff5577;--line:#252b42;
+      --shadow:0 24px 70px rgba(0,0,0,.38);
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;min-height:100%;background:radial-gradient(circle at 20% 0%,#15113a 0,#080a12 38%,#05060b 100%);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+    body{overflow-x:hidden}
+    button{font:inherit}
+    .bg-orb{position:fixed;inset:auto;pointer-events:none;filter:blur(55px);opacity:.2;border-radius:50%;z-index:0}
+    .orb1{width:260px;height:260px;background:#7c5cff;top:-80px;left:-70px}.orb2{width:300px;height:300px;background:#00d4ff;right:-100px;bottom:-100px}
+    .app{position:relative;z-index:1;max-width:980px;margin:0 auto;padding:24px 16px 40px}
+    .topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}
+    .brand{font-weight:900;letter-spacing:.08em;font-size:.9rem}.brand span{color:var(--accent2)}
+    .icon-btn,.ghost-btn{border:1px solid var(--line);background:rgba(16,19,33,.8);color:var(--text);border-radius:12px;padding:9px 12px;cursor:pointer}
+    .screen{display:none}.screen.active{display:block}
+    .hero{min-height:calc(100vh - 110px);display:grid;place-items:center}
+    .hero-card,.game-card,.result-card{background:linear-gradient(145deg,rgba(20,24,42,.92),rgba(11,14,25,.92));border:1px solid var(--line);border-radius:28px;box-shadow:var(--shadow);backdrop-filter:blur(18px)}
+    .hero-card{width:min(760px,100%);padding:44px 28px;text-align:center}
+    .eyebrow{color:var(--accent2);font-weight:800;letter-spacing:.16em;text-transform:uppercase;font-size:.76rem}
+    h1{font-size:clamp(2.6rem,8vw,5.6rem);line-height:.92;margin:14px 0 18px;letter-spacing:-.06em}
+    .gradient{background:linear-gradient(90deg,#fff,#aeb9ff,#5ce8ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+    .tagline{color:var(--muted);font-size:1.08rem;max-width:560px;margin:0 auto 28px}
+    .stats-row{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:0 0 26px}
+    .stat{padding:10px 14px;border:1px solid var(--line);border-radius:999px;color:#d8def2;background:rgba(255,255,255,.025)}
+    .primary{border:0;border-radius:14px;padding:14px 24px;background:linear-gradient(135deg,var(--accent),#5a8cff);color:#fff;font-weight:900;cursor:pointer;box-shadow:0 12px 35px rgba(124,92,255,.3);transition:.18s transform,.18s filter}
+    .primary:hover{transform:translateY(-2px);filter:brightness(1.08)}
+    .secondary{border:1px solid var(--line);border-radius:14px;padding:13px 20px;background:#12172a;color:#fff;font-weight:800;cursor:pointer}
+    .menu-grid{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:12px}
+    .best{margin-top:18px;color:var(--muted);font-size:.92rem}
+    .game-card{padding:20px}
+    .hud{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;margin-bottom:18px}
+    .hud-left,.hud-right{display:flex;gap:8px;align-items:center}.hud-right{justify-content:flex-end}
+    .pill{border:1px solid var(--line);background:#0d1120;padding:8px 11px;border-radius:12px;color:#cbd4ed;font-size:.86rem}
+    .level{text-align:center;font-weight:900;letter-spacing:.08em}
+    .progress{height:7px;background:#080b15;border-radius:999px;overflow:hidden;margin-bottom:20px;border:1px solid #171c2d}
+    .progress>div{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));width:0;transition:width .35s ease}
+    .timer-wrap{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+    .timer{font-weight:1000;font-size:1.35rem;min-width:60px;text-align:right}.timer.danger{color:var(--bad);animation:pulse .6s infinite alternate}
+    @keyframes pulse{to{transform:scale(1.06)}}
+    .question{font-size:clamp(1.25rem,3vw,1.9rem);font-weight:850;line-height:1.25;text-align:center;margin:12px auto 22px;max-width:760px}
+    .visual{min-height:90px;display:grid;place-items:center;text-align:center;margin:0 auto 18px;font-size:clamp(2rem,7vw,4.5rem);letter-spacing:.08em;font-weight:950}
+    .visual.small{font-size:clamp(1.2rem,4vw,2.2rem)}
+    .memory-box{font-size:clamp(1.8rem,6vw,3.6rem);letter-spacing:.18em;padding:20px 12px;border:1px dashed #3a4262;border-radius:18px;background:#0b0f1d}
+    .answers{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+    .answer{border:1px solid var(--line);background:#11162a;color:#f4f7ff;border-radius:15px;padding:15px 14px;cursor:pointer;font-weight:800;min-height:58px;transition:.16s}
+    .answer:hover{border-color:#4a5680;background:#161d35;transform:translateY(-1px)}
+    .answer:disabled{cursor:default;opacity:.85;transform:none}
+    .answer.correct{border-color:rgba(46,229,157,.65);background:rgba(46,229,157,.12)}
+    .answer.wrong{border-color:rgba(255,85,119,.65);background:rgba(255,85,119,.12)}
+    .feedback{min-height:46px;text-align:center;padding:14px 8px;color:var(--muted);font-size:.95rem}
+    .feedback.good{color:var(--good);font-weight:800}.feedback.bad{color:#ff9ab0}
+    .result-wrap{min-height:calc(100vh - 110px);display:grid;place-items:center}
+    .result-card{width:min(720px,100%);padding:40px 26px;text-align:center}
+    .result-card h2{font-size:clamp(2.5rem,7vw,4.5rem);margin:10px 0}
+    .big-score{font-size:3rem;font-weight:1000;margin:10px 0}
+    .result-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:22px 0}
+    .result-box{padding:15px;border:1px solid var(--line);border-radius:16px;background:#0d1120}.result-box strong{display:block;font-size:1.35rem}.result-box span{color:var(--muted);font-size:.82rem}
+    .hidden{display:none!important}
+    .modal{position:fixed;inset:0;background:rgba(2,4,10,.78);display:none;place-items:center;padding:18px;z-index:10}
+    .modal.open{display:grid}
+    .modal-card{width:min(600px,100%);background:#101421;border:1px solid var(--line);border-radius:22px;padding:24px;box-shadow:var(--shadow)}
+    .modal-card h3{margin-top:0}.modal-card li{margin:10px 0;color:#c5cee5}.modal-actions{text-align:right;margin-top:18px}
+    .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);opacity:0;pointer-events:none;background:#12182b;border:1px solid var(--line);padding:11px 15px;border-radius:12px;color:#fff;z-index:20;transition:.2s}
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+    @media(max-width:650px){
+      .app{padding:14px 10px 28px}.hero-card{padding:34px 18px}.game-card{padding:14px}.hud{grid-template-columns:1fr auto}.hud-left{grid-column:1}.hud-right{grid-column:2}.level{grid-column:1/-1;grid-row:1;order:-1}
+      .answers{grid-template-columns:1fr}.answer{min-height:54px}.result-grid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-orb orb1"></div><div class="bg-orb orb2"></div>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand">ONLY <span>1%</span> CAN PASS</div>
+      <button class="icon-btn" id="soundBtn" aria-label="Toggle sound">🔊</button>
+    </header>
+
+    <section id="home" class="screen active hero">
+      <div class="hero-card">
+        <div class="eyebrow">Impossible Brain Challenge</div>
+        <h1 class="gradient">ONLY 1%<br>CAN PASS</h1>
+        <p class="tagline">Think fast. Look carefully. Don't trust your first answer.</p>
+        <div class="stats-row">
+          <div class="stat">30 Levels</div><div class="stat">10 Challenge Types</div><div class="stat">3 Lives</div>
+        </div>
+        <div class="menu-grid">
+          <button class="primary" id="playBtn">▶ PLAY</button>
+          <button class="secondary" id="dailyBtn">📅 DAILY CHALLENGE</button>
+          <button class="secondary" id="howBtn">HOW TO PLAY</button>
+        </div>
+        <div class="best">Best Level: <strong id="bestLevel">0</strong> · Best Score: <strong id="bestScore">0</strong></div>
+      </div>
+    </section>
+
+    <section id="game" class="screen">
+      <div class="game-card">
+        <div class="hud">
+          <div class="hud-left"><div class="pill">🏆 <span id="score">0</span></div><div class="pill">❤️ <span id="lives">3</span></div></div>
+          <div class="level">LEVEL <span id="level">1</span>/<span id="totalLevels">30</span></div>
+          <div class="hud-right"><div class="pill">🔥 x<span id="combo">0</span></div></div>
+        </div>
+        <div class="progress"><div id="progress"></div></div>
+        <div class="timer-wrap"><div class="timer" id="timer">10.0</div><div class="progress" style="flex:1;margin:0"><div id="timerBar"></div></div></div>
+        <div id="visual" class="visual hidden"></div>
+        <div id="memoryBox" class="memory-box hidden"></div>
+        <div id="question" class="question"></div>
+        <div id="answers" class="answers"></div>
+        <div id="feedback" class="feedback"></div>
+      </div>
+    </section>
+
+    <section id="result" class="screen result-wrap">
+      <div class="result-card">
+        <div class="eyebrow" id="resultEyebrow">RESULT</div>
+        <h2 id="resultTitle">GAME OVER</h2>
+        <p id="resultMessage">You reached Level 1.</p>
+        <div class="big-score" id="finalScore">0</div>
+        <div class="result-grid">
+          <div class="result-box"><strong id="resultLevel">0</strong><span>LEVEL REACHED</span></div>
+          <div class="result-box"><strong id="resultCorrect">0</strong><span>CORRECT</span></div>
+          <div class="result-box"><strong id="resultBest">0</strong><span>BEST SCORE</span></div>
+        </div>
+        <div class="menu-grid">
+          <button class="primary" id="againBtn">↻ PLAY AGAIN</button>
+          <button class="secondary" id="shareBtn">↗ SHARE RESULT</button>
+          <button class="secondary" id="homeBtn">⌂ MAIN MENU</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal" id="howModal">
+    <div class="modal-card">
+      <h3>How to play</h3>
+      <ul>
+        <li>You have <strong>3 lives</strong>. A wrong answer costs one.</li>
+        <li>Answer before the timer reaches zero for a speed bonus.</li>
+        <li>Correct answers build your <strong>combo</strong> and increase your score.</li>
+        <li>Challenges mix logic, memory, patterns, observation and trick questions.</li>
+        <li>Your best level and score are saved on this device.</li>
+      </ul>
+      <div class="modal-actions"><button class="primary" id="closeHow">Got it</button></div>
+    </div>
+  </div>
+  <div class="toast" id="toast"></div>
+
+<script>
+(() => {
+  "use strict";
+
+  const LEVELS = [
+    {q:"What number comes next? 2, 4, 8, 16, ?", a:["24","30","32","34"], c:2, type:"pattern", e:"Each number doubles."},
+    {q:"Which one is different?", v:"▲ ▲ ▲ △ ▲", a:["1st","2nd","4th","5th"], c:2, type:"visual", e:"The 4th symbol is a triangle pointing differently."},
+    {q:"If you have 3 apples and take away 2, how many do YOU have?", a:["1","2","3","5"], c:1, type:"trick", e:"You took 2, so you have 2."},
+    {q:"What comes next? A, C, E, G, ?", a:["H","I","J","K"], c:1, type:"pattern", e:"Every second letter: A, C, E, G, I."},
+    {q:"Which word does NOT belong?", a:["APPLE","BANANA","CARROT","ORANGE"], c:2, type:"logic", e:"Carrot is a vegetable; the others are fruits."},
+    {q:"Which shape has the most sides?", v:"△   □   ⬟   ⬢", a:["Triangle","Square","Pentagon","Hexagon"], c:3, type:"visual", e:"The hexagon has 6 sides."},
+    {q:"A clock shows 3:00. What is the angle between the hands?", a:["0°","45°","90°","180°"], c:2, type:"logic", e:"At 3:00 the hands form a right angle."},
+    {q:"Find the missing number: 5, 10, 15, 20, ?", a:["22","24","25","30"], c:2, type:"pattern", e:"Add 5 each time."},
+    {q:"Which is heavier?", a:["1 kg of iron","1 kg of feathers","Iron","Depends on size"], c:0, type:"trick", e:"Both first two options are exactly 1 kg."},
+    {q:"Which symbol appears twice?  ◆ ○ ▲ ◆ ■", a:["○","▲","◆","■"], c:2, type:"memory", e:"◆ appears twice."},
+    {q:"What is 15% of 100?", a:["5","10","15","20"], c:2, type:"math", e:"15% of 100 is 15."},
+    {q:"Which number is the odd one out?", a:["9","16","25","30"], c:3, type:"logic", e:"9, 16 and 25 are perfect squares."},
+    {q:"Complete the sequence: 1, 1, 2, 3, 5, 8, ?", a:["11","12","13","15"], c:2, type:"pattern", e:"Add the previous two numbers."},
+    {q:"Which direction is opposite to NORTH-EAST?", a:["NORTH-WEST","SOUTH-EAST","SOUTH-WEST","WEST"], c:2, type:"logic", e:"The opposite of NE is SW."},
+    {q:"If all Bloops are Razzies and all Razzies are Lazzies, are all Bloops Lazzies?", a:["Yes","No","Only sometimes","Impossible to know"], c:0, type:"logic", e:"If Bloop → Razzie and Razzie → Lazzie, then Bloop → Lazzie."},
+    {q:"What comes next? 81, 27, 9, 3, ?", a:["0","1","2","6"], c:1, type:"pattern", e:"Divide by 3 each time."},
+    {q:"Which line is longest?", v:"────────   ────────   ────────", a:["First","Second","Third","They are equal"], c:3, type:"visual", e:"They are intentionally equal."},
+    {q:"A farmer has 17 sheep. All but 9 run away. How many remain?", a:["8","9","17","0"], c:1, type:"trick", e:"All but 9 means 9 remain."},
+    {q:"What is the next letter? Z, X, V, T, ?", a:["S","R","Q","P"], c:1, type:"pattern", e:"Move backward by 2 letters."},
+    {q:"Which number completes: 3 × ? = 27", a:["6","7","8","9"], c:3, type:"math", e:"27 ÷ 3 = 9."},
+    {q:"Which one is different? 12, 18, 24, 31", a:["12","18","24","31"], c:3, type:"logic", e:"The first three are divisible by 6."},
+    {q:"If yesterday was Monday, what day is tomorrow?", a:["Monday","Tuesday","Wednesday","Thursday"], c:2, type:"trick", e:"If yesterday was Monday, today is Tuesday and tomorrow is Wednesday."},
+    {q:"Find the next pair: AB, CD, EF, ?", a:["FG","GH","HI","IJ"], c:1, type:"pattern", e:"Pairs move forward by two letters."},
+    {q:"Which number is closest to 100?", a:["91","98","101","109"], c:2, type:"math", e:"101 is only 1 away."},
+    {q:"Which is NOT a prime number?", a:["17","19","21","23"], c:2, type:"math", e:"21 = 3 × 7."},
+    {q:"What is 7 × 8?", a:["48","54","56","64"], c:2, type:"math", e:"7 × 8 = 56."},
+    {q:"Which comes next? 🟦 🟥 🟦 🟥 🟦 ?", a:["🟥","🟩","🟨","🟦"], c:0, type:"pattern", e:"The colors alternate."},
+    {q:"A room has 4 corners. A cat sits in each corner. How many cats are there?", a:["4","8","12","16"], c:0, type:"trick", e:"One cat per corner = 4."},
+    {q:"What is the missing number? 2, 6, 12, 20, ?", a:["24","28","30","32"], c:2, type:"pattern", e:"n × (n+1): 1×2, 2×3, 3×4, 4×5, 5×6."},
+    {q:"FINAL TEST: What number comes next? 1, 4, 9, 16, 25, ?", a:["30","32","36","49"], c:2, type:"pattern", e:"These are square numbers: 1², 2², 3², 4², 5², 6²."}
+  ];
+
+  const $ = id => document.getElementById(id);
+  const state = {
+    level:0, score:0, lives:3, combo:0, correct:0, timer:10, timerId:null, answered:false,
+    daily:false, sound:true, memoryValue:null
+  };
+
+  const savedBestLevel = Number(localStorage.getItem("op1_best_level") || 0);
+  const savedBestScore = Number(localStorage.getItem("op1_best_score") || 0);
+  $("bestLevel").textContent = savedBestLevel;
+  $("bestScore").textContent = savedBestScore;
+  $("totalLevels").textContent = LEVELS.length;
+
+  function showScreen(id){
+    document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+    $(id).classList.add("active");
+  }
+
+  function tone(freq=440,duration=.08,type="sine"){
+    if(!state.sound) return;
+    try{
+      const C=window.AudioContext||window.webkitAudioContext;
+      if(!C) return;
+      const ctx=new C(), o=ctx.createOscillator(), g=ctx.createGain();
+      o.type=type;o.frequency.value=freq;g.gain.value=.045;
+      o.connect(g);g.connect(ctx.destination);o.start();
+      g.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+duration);
+      o.stop(ctx.currentTime+duration);
+    }catch(e){}
+  }
+
+  function shuffle(arr){
+    const x=[...arr];
+    for(let i=x.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[x[i],x[j]]=[x[j],x[i]]}
+    return x;
+  }
+
+  function dailyIndex(){
+    const d=new Date();
+    const key=Number(`${d.getFullYear()}${String(d.getMonth()+1).padStart(2,"0")}${String(d.getDate()).padStart(2,"0")}`);
+    return key % LEVELS.length;
+  }
+
+  function startGame(daily=false){
+    clearInterval(state.timerId);
+    state.level=daily?dailyIndex():0;
+    state.score=0;state.lives=3;state.combo=0;state.correct=0;state.answered=false;state.daily=daily;
+    showScreen("game");
+    loadLevel();
+  }
+
+  function renderVisual(item){
+    $("visual").classList.add("hidden");
+    $("memoryBox").classList.add("hidden");
+    if(item.type==="visual"){
+      $("visual").textContent=item.v||"";
+      $("visual").classList.remove("hidden");
+    }
+    if(item.type==="memory"){
+      $("visual").textContent=item.v||"";
+      $("visual").classList.remove("hidden");
+    }
+  }
+
+  function loadLevel(){
+    clearInterval(state.timerId);
+    state.answered=false;
+    const item=LEVELS[state.level % LEVELS.length];
+    $("level").textContent=state.level+1;
+    $("score").textContent=state.score;
+    $("lives").textContent=state.lives;
+    $("combo").textContent=state.combo;
+    $("progress").style.width=((state.level)/LEVELS.length*100)+"%";
+    $("question").textContent=item.q;
+    $("feedback").textContent="";
+    $("feedback").className="feedback";
+    renderVisual(item);
+
+    const answers=$("answers");answers.innerHTML="";
+    item.a.forEach((text,i)=>{
+      const b=document.createElement("button");
+      b.className="answer";b.textContent=text;
+      b.addEventListener("click",()=>answer(i,b));
+      answers.appendChild(b);
+    });
+
+    state.timer=10;
+    $("timer").textContent=state.timer.toFixed(1);
+    $("timer").classList.remove("danger");
+    $("timerBar").style.width="100%";
+    state.timerId=setInterval(()=>{
+      state.timer=Math.max(0,state.timer-.1);
+      $("timer").textContent=state.timer.toFixed(1);
+      $("timerBar").style.width=(state.timer*10)+"%";
+      if(state.timer<=3) $("timer").classList.add("danger");
+      if(state.timer<=0){clearInterval(state.timerId);answer(-1,null);}
+    },100);
+  }
+
+  function answer(index,button){
+    if(state.answered) return;
+    state.answered=true;clearInterval(state.timerId);
+    const item=LEVELS[state.level % LEVELS.length];
+    const buttons=[...document.querySelectorAll(".answer")];
+    buttons.forEach(b=>b.disabled=true);
+    if(index===item.c){
+      if(button) button.classList.add("correct");
+      state.correct++;state.combo++;
+      const speedBonus=Math.round(state.timer*10);
+      const comboBonus=Math.min(150,(state.combo-1)*15);
+      state.score+=100+speedBonus+comboBonus;
+      $("feedback").textContent=`✓ Correct! ${item.e}  +${100+speedBonus+comboBonus}`;
+      $("feedback").className="feedback good";
+      tone(720,.1);setTimeout(()=>tone(980,.08),70);
+      $("score").textContent=state.score;$("combo").textContent=state.combo;
+      setTimeout(nextLevel,850);
+    }else{
+      if(button) button.classList.add("wrong");
+      if(buttons[item.c]) buttons[item.c].classList.add("correct");
+      state.lives--;state.combo=0;
+      $("feedback").textContent=`✕ ${state.timer<=0?"Time's up! ":"Wrong. "}${item.e}`;
+      $("feedback").className="feedback bad";
+      $("lives").textContent=state.lives;$("combo").textContent=0;
+      tone(180,.16,"sawtooth");
+      setTimeout(()=>state.lives>0?nextLevel():endGame(false),1000);
+    }
+  }
+
+  function nextLevel(){
+    if(state.level>=LEVELS.length-1){endGame(true);return}
+    state.level++;
+    loadLevel();
+  }
+
+  function endGame(won){
+    clearInterval(state.timerId);
+    const reached=won?LEVELS.length:state.level+1;
+    const bestL=Math.max(Number(localStorage.getItem("op1_best_level")||0),reached);
+    const bestS=Math.max(Number(localStorage.getItem("op1_best_score")||0),state.score);
+    localStorage.setItem("op1_best_level",bestL);
+    localStorage.setItem("op1_best_score",bestS);
+    $("resultEyebrow").textContent=state.daily?"DAILY CHALLENGE":"RESULT";
+    $("resultTitle").textContent=won?"YOU ARE IN THE 1%":"GAME OVER";
+    $("resultMessage").textContent=won?"You completed every challenge. Absolute brain mode unlocked!":`You reached Level ${reached}. Can you beat it next time?`;
+    $("finalScore").textContent=state.score;
+    $("resultLevel").textContent=reached;
+    $("resultCorrect").textContent=state.correct;
+    $("resultBest").textContent=bestS;
+    $("bestLevel").textContent=bestL;$("bestScore").textContent=bestS;
+    if(won){tone(700,.12);setTimeout(()=>tone(900,.12),100);setTimeout(()=>tone(1100,.18),200)}
+    showScreen("result");
+  }
+
+  function toast(msg){
+    const t=$("toast");t.textContent=msg;t.classList.add("show");
+    setTimeout(()=>t.classList.remove("show"),2200);
+  }
+
+  $("playBtn").onclick=()=>startGame(false);
+  $("dailyBtn").onclick=()=>startGame(true);
+  $("againBtn").onclick=()=>startGame(false);
+  $("homeBtn").onclick=()=>{clearInterval(state.timerId);showScreen("home")};
+  $("howBtn").onclick=()=>$("howModal").classList.add("open");
+  $("closeHow").onclick=()=>$("howModal").classList.remove("open");
+  $("soundBtn").onclick=()=>{
+    state.sound=!state.sound;
+    $("soundBtn").textContent=state.sound?"🔊":"🔇";
+    localStorage.setItem("op1_sound",state.sound?"1":"0");
+    if(state.sound) tone(650,.08);
+  };
+  state.sound=localStorage.getItem("op1_sound")!=="0";
+  $("soundBtn").textContent=state.sound?"🔊":"🔇";
+
+  $("shareBtn").onclick=async()=>{
+    const text=`I reached Level ${$("resultLevel").textContent} in ONLY 1% CAN PASS with ${$("finalScore").textContent} points. Can you beat me?`;
+    try{
+      if(navigator.share){await navigator.share({title:"ONLY 1% CAN PASS",text,url:location.href});}
+      else if(navigator.clipboard){await navigator.clipboard.writeText(text+" "+location.href);toast("Challenge copied!");}
+      else toast(text);
+    }catch(e){}
+  };
+
+  // Keyboard support: press 1–4 to choose an answer.
+  document.addEventListener("keydown",e=>{
+    if(!$("game").classList.contains("active")||state.answered) return;
+    const n=Number(e.key);
+    if(n>=1&&n<=4){
+      const btn=document.querySelectorAll(".answer")[n-1];
+      if(btn) btn.click();
+    }
+  });
+})();
+</script>
+</body>
+</html>
